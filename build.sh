@@ -1,0 +1,1 @@
+docker build --pull -t haxe:4.3.6-gllr .
