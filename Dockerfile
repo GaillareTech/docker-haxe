@@ -109,7 +109,9 @@ RUN set -ex ;\
 	# fix for https://github.com/HaxeFoundation/haxe/issues/11787#issuecomment-2413147609
 	opam pin add extlib 1.7.9 ;\
 	opam pin add luv 0.5.12 ;\
-	opam install haxe --deps-only ;\ 
+	# try first with --assume-depexts and fallback without it to handle
+	# the case where its is not allowed (this seems to depends on the $os) 
+	opam install haxe --deps-only --assume-depexts || opam install haxe --deps-only ;\ 
 	opam list
 	# make
 
