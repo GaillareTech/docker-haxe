@@ -27,12 +27,14 @@ In `devcontainer.json`:
         }
     ],
 
-	// [optional] View GUI apps
+	// [optional] View GUI apps (Linux-only)
 	"runArgs": [
 		"-e", "DISPLAY=${env:DISPLAY}",
 		"-v", "/tmp/.X11-unix:/tmp/.X11-unix"
 	],
-	"initializeCommand": "xhost +local:docker", // Allow connections to X server, run `xhost -local:docker` to close
+	"initializeCommand": {
+		"Allow connections to X server": "xhost +local:docker", // run `xhost -local:docker` to close
+	},
 
 	// Include VSCode extensions
 	"customizations": {
