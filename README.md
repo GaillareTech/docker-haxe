@@ -5,7 +5,7 @@
 Create the files `devcontainer.json` and `Dockerfile` in your workspaces's `.devcontainer` folder or one of its subfolders in case you want several dev containers (e.g. `.devcontainer/haxe` and `.devcontainer/nodejs`):
 
 In `devcontainer.json`:
-```json
+```jsonc
 {
 	// [optional] Name to display for this Dev Container
 	"name": "Haxe",
