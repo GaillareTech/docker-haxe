@@ -64,13 +64,14 @@ RUN set -ex ;\
 ENV NEKOPATH=/usr/src/neko
 ARG RUNNER_TEMP=/usr/src/tmp
 ARG PLATFORM=linux64
+ARG NEKO_BINARY=https://build.haxe.org/builds/neko/$PLATFORM/neko_2025-04-15_master_e2fa58b.tar.gz
 RUN set -ex ;\
 	mkdir $RUNNER_TEMP ;\
 	# brought from https://github.com/HaxeFoundation/haxe/blob/development/.github/workflows/main.yml#L144
-	curl -sSL https://build.haxe.org/builds/neko/$PLATFORM/neko_latest.tar.gz -o $RUNNER_TEMP/neko_latest.tar.gz ;\
-	tar -xf $RUNNER_TEMP/neko_latest.tar.gz -C $RUNNER_TEMP ;\
+	curl -sSL $NEKO_BINARY -o $RUNNER_TEMP/neko_binary.tar.gz ;\
+	tar -xf $RUNNER_TEMP/neko_binary.tar.gz -C $RUNNER_TEMP ;\
 		# move into NEKOPATH
-		rm -fr $RUNNER_TEMP/neko_latest.tar.gz ;\
+		rm -fr $RUNNER_TEMP/neko_binary.tar.gz ;\
 		mv $RUNNER_TEMP/neko-*-* $NEKOPATH ;\
 	mkdir -p /usr/local/bin ;\
 	mkdir -p /usr/local/include ;\
