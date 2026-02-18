@@ -53,8 +53,8 @@ ENV HAXE_COMPILER_DIR=$HAXE_COMPILER_DIR
 ENV OPAMYES=1
 RUN set -ex ;\
 	add-apt-repository ppa:haxe/ocaml -y ;\
-	apt-get update -qqy ;\
-	apt-get install -qqy ocaml-nox camlp5 opam libpcre2-dev zlib1g-dev libgtk2.0-dev libmbedtls-dev ninja-build libstring-shellquote-perl libipc-system-simple-perl
+	apt update -qqy ;\
+	apt install -qqy ocaml-nox camlp5 opam libpcre2-dev zlib1g-dev libgtk2.0-dev libmbedtls-dev ninja-build libstring-shellquote-perl libipc-system-simple-perl
 RUN set -ex ;\
 	opam init --disable-sandboxing ;\
 	opam update ;\
@@ -64,30 +64,28 @@ RUN set -ex ;\
 ENV NEKOPATH=/usr/src/neko
 ARG RUNNER_TEMP=/usr/src/tmp
 ARG PLATFORM=linux64
-ARG NEKO_BINARY=https://build.haxe.org/builds/neko/$PLATFORM/neko_2025-04-15_master_e2fa58b.tar.gz
+ARG NEKO_BINARY=https://build.haxe.org/builds/neko/$PLATFORM/neko_latest.tar.gz
 RUN set -ex ;\
 	mkdir $RUNNER_TEMP ;\
 	# brought from https://github.com/HaxeFoundation/haxe/blob/development/.github/workflows/main.yml#L144
 	curl -sSL $NEKO_BINARY -o $RUNNER_TEMP/neko_binary.tar.gz ;\
 	tar -xf $RUNNER_TEMP/neko_binary.tar.gz -C $RUNNER_TEMP ;\
-		# move into NEKOPATH
-		rm -fr $RUNNER_TEMP/neko_binary.tar.gz ;\
-		mv $RUNNER_TEMP/neko-*-* $NEKOPATH ;\
-	mkdir -p /usr/local/bin ;\
-	mkdir -p /usr/local/include ;\
-	mkdir -p /usr/local/lib/neko ;\
-	mv $NEKOPATH/neko  /usr/local/bin/ ;\
-	mv $NEKOPATH/nekoc  /usr/local/bin/ ;\
-	mv $NEKOPATH/nekoml  /usr/local/bin/ ;\
-	mv $NEKOPATH/nekotools  /usr/local/bin/ ;\
-	mv $NEKOPATH/libneko.*                      /usr/local/lib/ ;\
-	mv $NEKOPATH/include/*                      /usr/local/include/ ;\
-	mv $NEKOPATH/*.ndll                         /usr/local/lib/ ;\
+	# move into NEKOPATH
+	rm -fr $RUNNER_TEMP/neko_binary.tar.gz ;\
+	mv $RUNNER_TEMP/neko-*-* $NEKOPATH ;\
+	mkdir -p /usr/bin ;\
+	mkdir -p /usr/include ;\
+	mkdir -p /usr/lib/neko ;\
+	ln -s  $NEKOPATH/neko       /usr/bin/ ;\
+	ln -s  $NEKOPATH/nekoc        /usr/bin/ ;\
+	ln -s  $NEKOPATH/nekoml       /usr/bin/ ;\
+	ln -s  $NEKOPATH/nekotools    /usr/bin/ ;\
+	ln -s  $NEKOPATH/libneko.*  /usr/lib/ ;\
+	ln -s  $NEKOPATH/include/*  /usr/include/ ;\
+	ln -s  $NEKOPATH/*.ndll     /usr/lib/neko/ ;\
 		# clean things
 		rm -fr $RUNNER_TEMP ;\
-		rm -fr $NEKOPATH ;\
 		neko -version
-ENV NEKOPATH=/usr/local/bin/
 
 # Clone Haxe sources
 WORKDIR $HAXE_COMPILER_DIR
@@ -99,10 +97,6 @@ RUN set -ex ;\
 	# fix to avoid timeout when pulling many submodules
 	git config --global url."https://".insteadOf git:// ;\
 	git submodule update --init --recursive
-
-# Install Haxe dependencies
-# RUN apt install libmbedtls-dev libpcre3-dev neko neko-dev pkg-config xdot zlib1g-dev -y
-# RUN apt install libpcre2-dev zlib1g-dev libmbedtls-dev
 
 # Install OCaml libraries
 RUN set -ex ;\
@@ -122,16 +116,7 @@ RUN set -ex ;\
 	opam config exec -- make -s -j`nproc` STATICLINK=1 haxe ;\
 	opam config exec -- make -s haxelib ;\
 	make install ;\
-		# install via the package manager to avoid https://github.com/HaxeFoundation/haxe.org/issues/75#issuecomment-1049233669
-		# delete neko then (still used for building haxe)
-		rm -f /usr/local/bin/*neko* ;\
-		rm -f /usr/local/bin/*.ndll ;\
-		apt install -qqy neko ;\
-		neko -version ;\
-		haxe --version ;\
-		haxelib version ;\
-		# setup haxelib
-		haxelib setup /usr/local/haxelib
+	haxelib setup /usr/local/haxelib
 
 # Install Haxe
 RUN make install
