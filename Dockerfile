@@ -32,16 +32,16 @@ RUN set -ex ;\
 
 # Install curl
 RUN set -ex ;\
-	apt update -qqy ;\
-	apt install curl -qqy
+	apt-get update -qqy ;\
+	apt-get install curl -qqy
 
 ###############
 # Install Git #
 ###############
 
 RUN set -ex ;\
-	apt update -qqy ;\
-	apt install -qqy git-all
+	apt-get update -qqy ;\
+	apt-get install -qqy git-all
 
 ################
 # Install Haxe #
@@ -53,8 +53,8 @@ ENV HAXE_COMPILER_DIR=$HAXE_COMPILER_DIR
 ENV OPAMYES=1
 RUN set -ex ;\
 	add-apt-repository ppa:haxe/ocaml -y ;\
-	apt update -qqy ;\
-	apt install -qqy ocaml-nox camlp5 opam libpcre2-dev zlib1g-dev libgtk2.0-dev libmbedtls-dev ninja-build libstring-shellquote-perl libipc-system-simple-perl
+	apt-get update -qqy ;\
+	apt-get install -qqy ocaml-nox camlp5 opam libpcre2-dev zlib1g-dev libgtk2.0-dev libmbedtls-dev ninja-build libstring-shellquote-perl libipc-system-simple-perl
 RUN set -ex ;\
 	opam init --disable-sandboxing ;\
 	opam update ;\
