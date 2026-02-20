@@ -1,5 +1,13 @@
 # docker-haxe
 
+This image ships a Haxe toolkit:
+
+    the `haxe` compiler with its standard library
+    the `haxelib` library manager
+    the `neko` virtual machine
+
+but differs from [github.com/HaxeFoundation/docker-library-haxe] in that it allows using [Haxe plugins](https://github.com/HaxeFoundation/haxe/tree/development/plugins/example) out of the box.
+
 ### Usage in Dev Container
 
 Create the files `devcontainer.json` and `Dockerfile` in your workspaces's `.devcontainer` folder or one of its subfolders in case you want several dev containers (e.g. `.devcontainer/haxe` and `.devcontainer/nodejs`):
@@ -60,3 +68,18 @@ FROM haxe:4.3.6-gllr AS build-stage
 Build `haxe:4.3.6-gllr` by running `./make-image.sh`.
 
 Your Dev Container is ready to be opened (`F1` > `Dev Container: Rebuild and Reopen in Container`).
+
+#### Install Haxe compiler plugins
+
+In `Dockerfile`, add the following:
+```Dockerfile
+
+# Compile a plugin to work with the haxe compiler
+RUN ./docker-haxe/setup-plugin.sh ./path/to/plugin
+
+# Compile with a post script run from the plugin directory
+RUN ./docker-haxe/setup-plugin.sh ./path/to/plugin --plugin-post-script "./post-script.sh"
+```
+
+- `setup-plugin.sh` compiles your [compiler plugin](https://github.com/HaxeFoundation/haxe/tree/development/plugins/example) to make it ready to use with your Haxe compiler. If it contains a `haxelib.json`, the haxelib is installed automatically.
+- `--plugin-post-script` runs a script from the plugin's directory after its compilation is successful.
