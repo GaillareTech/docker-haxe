@@ -1,9 +1,10 @@
+#!/bin/bash
 set -e
 HERE="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 WORKING_DIR=$(pwd)
 
 if [ -z "$HAXE_COMPILER_DIR" ]; then
-	# Run in a docker container already
+	# Run outside the container
 	echo "ERROR: setup-plugin.sh must run from within the container. You can run it from your Dockerfile."
 	exit 1
 fi
@@ -14,14 +15,23 @@ read_json_field() {
   cat "$JSON_PATH" | grep -o "\"$FIELD_NAME\"\s*:\s*\"[^\"]*\"" | sed 's|[^:]*:\s*"\([^"]*\)"|\1|'
 }
 
+function help() {
+  echo "Setup a Haxe plugin in your Haxe container (linux only)"
+  echo "Usage: setup-plugin.sh <path/to/plugin> [options...]"
+  echo "Options:"
+  echo " "
+  echo -e "  --plugin-post-script <cmd> \t Run a bash script inside the plugin directory after a successful build"
+}
+
+if [[ $# -eq 0 ]]; then
+  help
+  exit 0
+fi
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     ""|--help)
-      echo "Setup a Haxe plugin in your Haxe container (linux only)"
-      echo "Usage: setup-plugin.sh <path/to/plugin> [options...]"
-      echo "Options:"
-		  echo " "
-      echo -e "  --plugin-post-script <cmd> \t Run a bash script inside the plugin directory after a successful build, such as 'bash -c \"<cmd>\"'"
+      help
       exit 0 ;;
     --plugin-post-script=*)
       POST_PLUGIN_SCRIPT=${1#*--plugin-post-script=}
