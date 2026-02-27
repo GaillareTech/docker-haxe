@@ -79,14 +79,14 @@ Your Dev Container is ready to be opened (`F1` > `Dev Container: Rebuild and Reo
 
 #### Install Haxe compiler plugins
 
-In `Dockerfile`, add the following:
-```Dockerfile
+Run `./libs/docker-heaps/docker-haxe/setup-plugin.sh <path/to/plugin>` within the container.
 
-# Compile a plugin to work with the haxe compiler
-RUN ./libs/dhaxe/setup-plugin.sh ./path/to/plugin
+In `devcontainer.json`, add the following:
 
-# Compile with a post script run from the plugin directory
-RUN ./libs/dhaxe/setup-plugin.sh ./path/to/plugin --plugin-post-script "./post-script.sh"
+```json
+	"postCreateCommand": {
+		"Install plugin": "./libs/docker-heaps/docker-haxe/setup-plugin.sh <path/to/plugin>",
+	},
 ```
 
 - `setup-plugin.sh` compiles your [compiler plugin](https://github.com/HaxeFoundation/haxe/tree/development/plugins/example) to make it ready to use with your Haxe compiler:
