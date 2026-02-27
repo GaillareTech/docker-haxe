@@ -1,8 +1,18 @@
-HERE="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+#!/bin/bash
 
-echo "Pull base image to allow offline caching"
-OS=debian:12.8-slim
-docker image pull $OS
+DHAXE_IMAGE_NAME=dhaxe:4.3.6
 
-echo "Build image dhaxe:4.3.6"
-docker build --pull -t dhaxe:4.3.6 --build-arg os=$OS $HERE
+function _make_dhaxe_image() {
+
+	local BUILD_FLAGS=$@
+	if [[ -z "$BUILD_FLAGS" ]]; then
+		BUILD_FLAGS="--pull --build-arg from=debian:12.8-slim"
+	fi
+
+	local HERE="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+	echo "Build image $DHAXE_IMAGE_NAME"
+	docker build -t $DHAXE_IMAGE_NAME $BUILD_FLAGS $HERE
+}
+
+_make_dhaxe_image $@

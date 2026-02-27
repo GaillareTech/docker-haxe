@@ -5,14 +5,14 @@
 # Haxe CI build script for 4.3.6: https://github.com/HaxeFoundation/haxe/blob/4.3.6/.github/workflows/main.yml
 
 # The debian based distro to build and use the Haxe compiler from.
-ARG os=debian:12.8-slim
+ARG from=debian:12.8-slim
 # The Haxe version, can be a tag or a full commit id.
 ARG version=4.3.6
 
 # Global variables
 ARG HAXE_COMPILER_DIR=/usr/src/haxe
 
-FROM $os AS build-stage
+FROM $from AS build-stage
 ARG version
 ARG os
 ARG HAXE_COMPILER_DIR
