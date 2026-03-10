@@ -21,6 +21,9 @@ function _make_dhaxe_image() {
 	docker build -t $DHAXE_IMAGE_NAME $BUILD_FLAGS $HERE
 }
 
-if [ $(is_image_available $DHAXE_IMAGE_NAME) ]; then
+if [ "$1" = "--force" ]; then
+	shift;
+	_make_dhaxe_image $@
+elif [ $(is_image_available $DHAXE_IMAGE_NAME) ]; then
 	_make_dhaxe_image $@
 fi
