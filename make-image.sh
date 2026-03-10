@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DHAXE_IMAGE_NAME=dhaxe:4.3.6
+DHAXE_IMAGE_NAME=dhaxe:4.3.7
 
 function is_image_available() {
 	if [ -z "$(docker images -q $1 2> /dev/null)" ]; then

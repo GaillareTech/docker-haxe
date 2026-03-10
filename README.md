@@ -68,12 +68,12 @@ In `devcontainer.json`:
 
 In `Dockerfile`:
 ```Dockerfile
-FROM dhaxe:4.3.6 AS build-stage
+FROM dhaxe:4.3.7 AS build-stage
 
 # Install additional tools here to work in your workspace (e.g: specific NodeJS version, etc) 
 ```
 
-Build `dhaxe:4.3.6` by running `./libs/dhaxe/make-image.sh`.
+Build `dhaxe:4.3.7` by running `./libs/dhaxe/make-image.sh`.
 
 Your Dev Container is ready to be opened (`F1` > `Dev Container: Rebuild and Reopen in Container`).
 

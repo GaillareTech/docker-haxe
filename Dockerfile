@@ -2,12 +2,12 @@
 
 # Building Haxe: https://github.com/HaxeFoundation/haxe/blob/development/extra/BUILDING.md
 # Installing Opam: https://opam.ocaml.org/doc/Install.html
-# Haxe CI build script for 4.3.6: https://github.com/HaxeFoundation/haxe/blob/4.3.6/.github/workflows/main.yml
+# Haxe CI build script for 4.3.7: https://github.com/HaxeFoundation/haxe/blob/4.3.7/.github/workflows/main.yml
 
 # The debian based distro to build and use the Haxe compiler from.
 ARG from=debian
 # The Haxe version, can be a tag or a full commit id.
-ARG version=4.3.6
+ARG version=4.3.7
 
 # Global variables
 ARG HAXE_COMPILER_DIR=/usr/src/haxe
@@ -47,22 +47,10 @@ RUN set -ex ;\
 # Install Haxe #
 ################
 ENV HAXE_COMPILER_DIR=$HAXE_COMPILER_DIR
-
-# Install Ocaml (https://opam.ocaml.org/doc/Install.html)
-# provides newer version of mbedtls
-ENV OPAMYES=1
-RUN set -ex ;\
-	add-apt-repository ppa:haxe/ocaml -y ;\
-	apt-get update -qqy ;\
-	apt-get install -qqy ocaml-nox camlp5 opam libpcre2-dev zlib1g-dev libgtk2.0-dev libmbedtls-dev ninja-build libstring-shellquote-perl libipc-system-simple-perl
-RUN set -ex ;\
-	opam init --disable-sandboxing ;\
-	opam update ;\
-	opam switch create 5.0.0
+ARG RUNNER_TEMP=/usr/src/tmp
 
 # Install Neko
 ENV NEKOPATH=/usr/src/neko
-ARG RUNNER_TEMP=/usr/src/tmp
 ARG PLATFORM=linux64
 ARG NEKO_BINARY=https://build.haxe.org/builds/neko/$PLATFORM/neko_latest.tar.gz
 RUN set -ex ;\
@@ -87,6 +75,22 @@ RUN set -ex ;\
 		rm -fr $RUNNER_TEMP ;\
 		neko -version
 
+# Install Ocaml (https://opam.ocaml.org/doc/Install.html)
+# provides newer version of mbedtls
+ENV OPAMYES=1
+RUN set -ex ;\
+	apt-get install -qqy unzip rsync darcs bubblewrap ocaml-nox libpcre2-dev zlib1g-dev libgtk2.0-dev libmbedtls-dev ninja-build libstring-shellquote-perl libipc-system-simple-perl ;\
+	mkdir $RUNNER_TEMP ;\
+	curl -sSL https://github.com/ocaml/opam/releases/download/2.3.0/opam-2.3.0-x86_64-linux -o $RUNNER_TEMP/opam ;\
+	install $RUNNER_TEMP/opam /usr/local/bin/opam ;\
+	# clean things
+		rm -fr $RUNNER_TEMP
+
+RUN set -ex ;\
+	opam init --disable-sandboxing ;\
+	opam update ;\
+	opam switch create 5.3.0
+
 # Clone Haxe sources
 WORKDIR $HAXE_COMPILER_DIR
 RUN set -ex ;\
@@ -101,14 +105,8 @@ RUN set -ex ;\
 # Install OCaml libraries
 RUN set -ex ;\
 	opam pin add haxe . --kind=path --no-action ;\
-	# fix for https://github.com/HaxeFoundation/haxe/issues/11787#issuecomment-2413147609
-	opam pin add extlib 1.7.9 ;\
-	opam pin add luv 0.5.12 ;\
-	# try first with --assume-depexts and fallback without it to handle
-	# the case where its is not allowed (this seems to depends on the $os) 
 	opam install haxe --deps-only --assume-depexts || opam install haxe --deps-only ;\ 
 	opam list
-	# make
 
 # Build Haxe
 RUN set -ex ;\
