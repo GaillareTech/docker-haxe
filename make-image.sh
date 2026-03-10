@@ -3,7 +3,7 @@
 DHAXE_IMAGE_NAME=dhaxe:4.3.7
 
 function is_image_available() {
-	if [ -z "$(docker images -q $1 2> /dev/null)" ]; then
+	if [ ! -z "$(docker images -q $1 2> /dev/null)" ]; then
 		echo "$1"
 	fi
 }
@@ -24,6 +24,6 @@ function _make_dhaxe_image() {
 if [ "$1" = "--force" ]; then
 	shift;
 	_make_dhaxe_image $@
-elif [ $(is_image_available $DHAXE_IMAGE_NAME) ]; then
+elif [ ! $(is_image_available $DHAXE_IMAGE_NAME) ]; then
 	_make_dhaxe_image $@
 fi
