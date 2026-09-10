@@ -47,7 +47,6 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Arg: plugin path
-PLUGIN_SRC=./libs/ecso
 PLUGIN_NAME=`basename $PLUGIN_SRC`
 
 if [ ! -d "$PLUGIN_SRC" ]; then
